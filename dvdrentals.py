@@ -3,12 +3,18 @@ from playhouse.postgres_ext import *
 
 database = PostgresqlDatabase('dvdrental', **{})
 
+
 class UnknownField(object):
-    def __init__(self, *_, **__): pass
+
+    def __init__(self, *_, **__):
+        pass
+
 
 class BaseModel(Model):
+
     class Meta:
         database = database
+
 
 class Actor(BaseModel):
     actor = PrimaryKeyField(db_column='actor_id')
@@ -19,6 +25,7 @@ class Actor(BaseModel):
     class Meta:
         db_table = 'actor'
 
+
 class Country(BaseModel):
     country = CharField()
     country_id = PrimaryKeyField()
@@ -27,20 +34,28 @@ class Country(BaseModel):
     class Meta:
         db_table = 'country'
 
+
 class City(BaseModel):
     city = CharField()
     city_id = PrimaryKeyField()
-    country = ForeignKeyField(db_column='country_id', rel_model=Country, to_field='country_id')
+    country = ForeignKeyField(
+        db_column='country_id',
+        rel_model=Country,
+        to_field='country_id')
     last_update = DateTimeField()
 
     class Meta:
         db_table = 'city'
 
+
 class Address(BaseModel):
     address = CharField()
     address2 = CharField(null=True)
     address_id = PrimaryKeyField()
-    city = ForeignKeyField(db_column='city_id', rel_model=City, to_field='city_id')
+    city = ForeignKeyField(
+        db_column='city_id',
+        rel_model=City,
+        to_field='city_id')
     district = CharField()
     last_update = DateTimeField()
     phone = CharField()
@@ -48,6 +63,7 @@ class Address(BaseModel):
 
     class Meta:
         db_table = 'address'
+
 
 class Category(BaseModel):
     category = PrimaryKeyField(db_column='category_id')
@@ -57,10 +73,14 @@ class Category(BaseModel):
     class Meta:
         db_table = 'category'
 
+
 class Customer(BaseModel):
     active = IntegerField(null=True)
     activebool = BooleanField()
-    address = ForeignKeyField(db_column='address_id', rel_model=Address, to_field='address_id')
+    address = ForeignKeyField(
+        db_column='address_id',
+        rel_model=Address,
+        to_field='address_id')
     create_date = DateField()
     customer = PrimaryKeyField(db_column='customer_id')
     email = CharField(null=True)
@@ -72,6 +92,7 @@ class Customer(BaseModel):
     class Meta:
         db_table = 'customer'
 
+
 class Language(BaseModel):
     language = PrimaryKeyField(db_column='language_id')
     last_update = DateTimeField()
@@ -80,11 +101,15 @@ class Language(BaseModel):
     class Meta:
         db_table = 'language'
 
+
 class Film(BaseModel):
     description = TextField(null=True)
     film = PrimaryKeyField(db_column='film_id')
     fulltext = TSVectorField(index=True)
-    language = ForeignKeyField(db_column='language_id', rel_model=Language, to_field='language')
+    language = ForeignKeyField(
+        db_column='language_id',
+        rel_model=Language,
+        to_field='language')
     last_update = DateTimeField()
     length = IntegerField(null=True)
     rating = UnknownField(null=True)  # USER-DEFINED
@@ -98,9 +123,16 @@ class Film(BaseModel):
     class Meta:
         db_table = 'film'
 
+
 class FilmActor(BaseModel):
-    actor = ForeignKeyField(db_column='actor_id', rel_model=Actor, to_field='actor')
-    film = ForeignKeyField(db_column='film_id', rel_model=Film, to_field='film')
+    actor = ForeignKeyField(
+        db_column='actor_id',
+        rel_model=Actor,
+        to_field='actor')
+    film = ForeignKeyField(
+        db_column='film_id',
+        rel_model=Film,
+        to_field='film')
     last_update = DateTimeField()
 
     class Meta:
@@ -110,9 +142,16 @@ class FilmActor(BaseModel):
         )
         primary_key = CompositeKey('actor', 'film')
 
+
 class FilmCategory(BaseModel):
-    category = ForeignKeyField(db_column='category_id', rel_model=Category, to_field='category')
-    film = ForeignKeyField(db_column='film_id', rel_model=Film, to_field='film')
+    category = ForeignKeyField(
+        db_column='category_id',
+        rel_model=Category,
+        to_field='category')
+    film = ForeignKeyField(
+        db_column='film_id',
+        rel_model=Film,
+        to_field='film')
     last_update = DateTimeField()
 
     class Meta:
@@ -122,8 +161,12 @@ class FilmCategory(BaseModel):
         )
         primary_key = CompositeKey('category', 'film')
 
+
 class Inventory(BaseModel):
-    film = ForeignKeyField(db_column='film_id', rel_model=Film, to_field='film')
+    film = ForeignKeyField(
+        db_column='film_id',
+        rel_model=Film,
+        to_field='film')
     inventory = PrimaryKeyField(db_column='inventory_id')
     last_update = DateTimeField()
     store = IntegerField(db_column='store_id')
@@ -134,9 +177,13 @@ class Inventory(BaseModel):
             (('film', 'store'), False),
         )
 
+
 class Staff(BaseModel):
     active = BooleanField()
-    address = ForeignKeyField(db_column='address_id', rel_model=Address, to_field='address_id')
+    address = ForeignKeyField(
+        db_column='address_id',
+        rel_model=Address,
+        to_field='address_id')
     email = CharField(null=True)
     first_name = CharField()
     last_name = CharField()
@@ -150,14 +197,24 @@ class Staff(BaseModel):
     class Meta:
         db_table = 'staff'
 
+
 class Rental(BaseModel):
-    customer = ForeignKeyField(db_column='customer_id', rel_model=Customer, to_field='customer')
-    inventory = ForeignKeyField(db_column='inventory_id', rel_model=Inventory, to_field='inventory')
+    customer = ForeignKeyField(
+        db_column='customer_id',
+        rel_model=Customer,
+        to_field='customer')
+    inventory = ForeignKeyField(
+        db_column='inventory_id',
+        rel_model=Inventory,
+        to_field='inventory')
     last_update = DateTimeField()
     rental_date = DateTimeField()
     rental = PrimaryKeyField(db_column='rental_id')
     return_date = DateTimeField(null=True)
-    staff = ForeignKeyField(db_column='staff_id', rel_model=Staff, to_field='staff')
+    staff = ForeignKeyField(
+        db_column='staff_id',
+        rel_model=Staff,
+        to_field='staff')
 
     class Meta:
         db_table = 'rental'
@@ -165,23 +222,40 @@ class Rental(BaseModel):
             (('rental_date', 'inventory', 'customer'), True),
         )
 
+
 class Payment(BaseModel):
     amount = DecimalField()
-    customer = ForeignKeyField(db_column='customer_id', rel_model=Customer, to_field='customer')
+    customer = ForeignKeyField(
+        db_column='customer_id',
+        rel_model=Customer,
+        to_field='customer')
     payment_date = DateTimeField()
     payment = PrimaryKeyField(db_column='payment_id')
-    rental = ForeignKeyField(db_column='rental_id', rel_model=Rental, to_field='rental')
-    staff = ForeignKeyField(db_column='staff_id', rel_model=Staff, to_field='staff')
+    rental = ForeignKeyField(
+        db_column='rental_id',
+        rel_model=Rental,
+        to_field='rental')
+    staff = ForeignKeyField(
+        db_column='staff_id',
+        rel_model=Staff,
+        to_field='staff')
 
     class Meta:
         db_table = 'payment'
 
+
 class Store(BaseModel):
-    address = ForeignKeyField(db_column='address_id', rel_model=Address, to_field='address_id')
+    address = ForeignKeyField(
+        db_column='address_id',
+        rel_model=Address,
+        to_field='address_id')
     last_update = DateTimeField()
-    manager_staff = ForeignKeyField(db_column='manager_staff_id', rel_model=Staff, to_field='staff', unique=True)
+    manager_staff = ForeignKeyField(
+        db_column='manager_staff_id',
+        rel_model=Staff,
+        to_field='staff',
+        unique=True)
     store = PrimaryKeyField(db_column='store_id')
 
     class Meta:
         db_table = 'store'
-
